@@ -1,0 +1,35 @@
+template header
+houseType
+houseTypeName
+salesAmount
+commission
+fixedAmount
+
+
+package com.github.xiaoy.droolrule.fixed;
+import com.github.xiaoy.droolrule.param.FixedSectionParam;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+global org.slf4j.Logger logger
+
+template "fixed_template"
+
+rule "固定-@{houseTypeName}-@{commission}"
+	when
+        $p : FixedSectionParam(jumpPointCondition == "1"
+            && houseType == "@{houseType}"
+            && salesAmount >= @{salesAmount});
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        if($p.getCommissionType().equals("2")){
+            sumAmount = $p.getAmount().multiply(new BigDecimal(@{commission})).add(new BigDecimal(@{fixedAmount}));
+        }else if($p.getCommissionType().equals("1")){
+            sumAmount = new BigDecimal(@{commission}).add(new BigDecimal(@{fixedAmount}));
+        }
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("匹配rule1-fixed_section：{}",$p);
+
+end
+
+end template
