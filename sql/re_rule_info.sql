@@ -11,7 +11,7 @@
  Target Server Version : 80020
  File Encoding         : 65001
 
- Date: 10/01/2021 18:13:54
+ Date: 10/01/2021 20:50:26
 */
 
 SET NAMES utf8mb4;
@@ -23,7 +23,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `re_rule_info`;
 CREATE TABLE `re_rule_info`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `scene_id` bigint NULL DEFAULT NULL COMMENT '场景id，一个场景对应多个规则，一个场景对应一个业务场景，一个场景对应一个kmodule',
+  `group_id` bigint NULL DEFAULT NULL COMMENT '分组id，一个分组对应多个规则，一个分组对应一个业务分组，一个分组对应一个kmodule',
   `rule_gen_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '规则生成器的名称',
   `rule_content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '规则内容，既drl文件内容',
   `is_delete` bit(1) NULL DEFAULT NULL COMMENT '是否删除',

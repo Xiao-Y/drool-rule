@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 public class InitRuleLoader implements ApplicationRunner {
 
     /**
-     * key:kcontainerName,value:KieContainer，每个场景对应一个KieContainer
+     * key:kcontainerName,value:KieContainer，每个分组对应一个KieContainer
      */
     private final ConcurrentMap<String, KieContainer> kieContainerMap = new ConcurrentHashMap<>();
 
@@ -50,79 +50,79 @@ public class InitRuleLoader implements ApplicationRunner {
     /**
      * 构造kcontainerName
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      * @return kcontainerName
      */
-    private String buildKcontainerName(long sceneId) {
-        return "kcontainer_" + sceneId;
+    private String buildKcontainerName(long groupId) {
+        return "kcontainer_" + groupId;
     }
 
     /**
      * 构造kbaseName
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      * @return kbaseName
      */
-    private String buildKbaseName(long sceneId) {
-        return "kbase_" + sceneId;
+    private String buildKbaseName(long groupId) {
+        return "kbase_" + groupId;
     }
 
     /**
      * 构造ksessionName
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      * @return ksessionName
      */
-    private String buildKsessionName(long sceneId) {
-        return "ksession_" + sceneId;
+    private String buildKsessionName(long groupId) {
+        return "ksession_" + groupId;
     }
 
-    public KieContainer getKieContainerBySceneId(long sceneId) {
-        return kieContainerMap.get(buildKcontainerName(sceneId));
+    public KieContainer getKieContainerByGroupId(long groupId) {
+        return kieContainerMap.get(buildKcontainerName(groupId));
     }
 
     /**
      * 重新加载所有规则
      */
     public void reloadAll() {
-        Map<Long, List<RuleInfo>> sceneId2RuleInfoListMap = ruleInfoService.getRuleInfoListMap();
-        for (Map.Entry<Long, List<RuleInfo>> entry : sceneId2RuleInfoListMap.entrySet()) {
-            long sceneId = entry.getKey();
-            reload(sceneId, entry.getValue());
+        Map<Long, List<RuleInfo>> groupId2RuleInfoListMap = ruleInfoService.getRuleInfoListMap();
+        for (Map.Entry<Long, List<RuleInfo>> entry : groupId2RuleInfoListMap.entrySet()) {
+            long groupId = entry.getKey();
+            reload(groupId, entry.getValue());
         }
         log.info("reload all success");
     }
 
     /**
-     * 重新加载给定场景下的规则
+     * 重新加载给定分组下的规则
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      */
-    public void reload(Long sceneId) {
-        List<RuleInfo> ruleInfos = ruleInfoService.getRuleInfoListBySceneId(sceneId);
-        reload(sceneId, ruleInfos);
+    public void reload(Long groupId) {
+        List<RuleInfo> ruleInfos = ruleInfoService.getRuleInfoListByGroupId(groupId);
+        reload(groupId, ruleInfos);
         log.info("reload success");
     }
 
     /**
-     * 重新加载给定场景给定规则列表，对应一个kmodule
+     * 重新加载给定分组给定规则列表，对应一个kmodule
      *
-     * @param sceneId   场景ID
+     * @param groupId   分组ID
      * @param ruleInfos 规则列表
      */
-    private void reload(long sceneId, List<RuleInfo> ruleInfos) {
+    private void reload(long groupId, List<RuleInfo> ruleInfos) {
         KieServices kieServices = KieServices.get();
         KieModuleModel kieModuleModel = kieServices.newKieModuleModel();
-        KieBaseModel kieBaseModel = kieModuleModel.newKieBaseModel(buildKbaseName(sceneId));
+        KieBaseModel kieBaseModel = kieModuleModel.newKieBaseModel(buildKbaseName(groupId));
         kieBaseModel.setDefault(true);
-        kieBaseModel.addPackage(MessageFormat.format("rules.scene_{0}", String.valueOf(sceneId)));
-        kieBaseModel.newKieSessionModel(buildKsessionName(sceneId));
+        kieBaseModel.addPackage(MessageFormat.format("rules.scene_{0}", String.valueOf(groupId)));
+        kieBaseModel.newKieSessionModel(buildKsessionName(groupId));
 
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
         for (RuleInfo ruleInfo : ruleInfos) {
-            log.info("正在加载规则 id:{},sceneId:{}", ruleInfo.getId(), ruleInfo.getSceneId());
+            log.info("正在加载规则 id:{},groupId:{}", ruleInfo.getId(), ruleInfo.getGroupId());
             String fullPath = MessageFormat.format("src/main/resources/rules/scene_{0}/rule_{1}.drl",
-                    String.valueOf(sceneId), String.valueOf(ruleInfo.getId()));
+                    String.valueOf(groupId), String.valueOf(ruleInfo.getId()));
             kieFileSystem.write(fullPath, ruleInfo.getRuleContent());
         }
         kieFileSystem.writeKModuleXML(kieModuleModel.toXML());
@@ -135,6 +135,6 @@ public class InitRuleLoader implements ApplicationRunner {
         }
 
         KieContainer kieContainer = kieServices.newKieContainer(kieServices.getRepository().getDefaultReleaseId());
-        kieContainerMap.put(buildKcontainerName(sceneId), kieContainer);
+        kieContainerMap.put(buildKcontainerName(groupId), kieContainer);
     }
 }

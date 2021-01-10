@@ -24,8 +24,8 @@ public class RuleTest extends DroolsApplicationTests {
     @Test
     public void test2() {
 
-        FixedSectionParam param = new FixedSectionParam("1", new BigDecimal(100000000),
-                "1", "2", new BigDecimal(50000));
+        FixedSectionParam param = new FixedSectionParam("1", "2", new BigDecimal(100000000),
+                new BigDecimal(50000));
 
         kieSession.setGlobal("logger", log);
 

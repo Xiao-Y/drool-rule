@@ -17,8 +17,7 @@ template "fixed_template"
 
 rule "固定-@{houseTypeName}-@{commission}"
 	when
-        $p : FixedSectionParam(jumpPointCondition == "1"
-            && houseType == "@{houseType}"
+        $p : FixedSectionParam(houseType == "@{houseType}"
             && salesAmount >= @{salesAmount});
     then
         BigDecimal sumAmount = BigDecimal.ZERO;
@@ -28,7 +27,7 @@ rule "固定-@{houseTypeName}-@{commission}"
             sumAmount = new BigDecimal(@{commission}).add(new BigDecimal(@{fixedAmount}));
         }
         $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
-        logger.info("匹配rule1-fixed_section：{}",$p);
+        logger.info("固定-@{houseTypeName}-@{commission}：{}",$p);
 
 end
 

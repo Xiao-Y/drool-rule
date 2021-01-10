@@ -1,14 +1,15 @@
 package com.github.xiaoy.droolrule.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.xiaoy.droolrule.constant.JumpPointEnum;
 import com.github.xiaoy.droolrule.entity.RuleInfo;
 import com.github.xiaoy.droolrule.gen.RuleGen;
 import com.github.xiaoy.droolrule.gen.impl.BaseRuleGen;
 import com.github.xiaoy.droolrule.mapper.RuleInfoMapper;
 import com.github.xiaoy.droolrule.service.RuleInfoService;
 import com.github.xiaoy.droolrule.utils.KieSessionHelper;
-import com.github.xiaoy.droolrule.utils.SnowFlakeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,13 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
     private Map<String, RuleGen> ruleGenMap;
 
     @Override
-    public long templateConverRule(String ruleGenName) throws Exception {
+    public long insertRule(String jumpPoint, long groupId) throws Exception {
+        String gen = JumpPointEnum.getRuleGenByJumpPoint(jumpPoint);
+        return this.templateConverRule(gen, groupId);
+    }
+
+    @Override
+    public long templateConverRule(String ruleGenName, long groupId) throws Exception {
         RuleGen ruleGen = ruleGenMap.get(ruleGenName);
         String drlString = ruleGen.generateRule();
 
@@ -48,7 +55,7 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
 
         // 保存新的到数据库
         RuleInfo ruleInfo = new RuleInfo();
-        ruleInfo.setSceneId(SnowFlakeUtil.getFlowIdInstance().nextId());
+        ruleInfo.setGroupId(groupId);
         ruleInfo.setRuleGenName(ruleGenName);
         ruleInfo.setRuleContent(drlString);
         ruleInfo.setValidInd(true);
@@ -56,32 +63,34 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
         ruleInfo.setCreateTime(new Date());
         ruleInfo.setUpdateTime(new Date());
         this.save(ruleInfo);
-        return ruleInfo.getSceneId();
+        return ruleInfo.getId();
     }
 
     @Override
-    public List<RuleInfo> getRuleInfoListBySceneId(Long sceneId) {
+    public List<RuleInfo> getRuleInfoListByGroupId(Long groupId) {
         LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(RuleInfo::getSceneId, sceneId);
+        wrapper.eq(RuleInfo::getGroupId, groupId);
         return this.list(wrapper);
     }
 
     @Override
     public Map<Long, List<RuleInfo>> getRuleInfoListMap() {
-        Map<Long, List<RuleInfo>> sceneId2RuleInfoListMap = new HashMap<>();
+        Map<Long, List<RuleInfo>> groupId2RuleInfoListMap = new HashMap<>();
         List<RuleInfo> allRuleInfos = this.list();
         for (RuleInfo ruleInfo : allRuleInfos) {
-            List<RuleInfo> ruleInfos = sceneId2RuleInfoListMap.computeIfAbsent(ruleInfo.getSceneId(), k -> new ArrayList<>());
+            List<RuleInfo> ruleInfos = groupId2RuleInfoListMap.computeIfAbsent(ruleInfo.getGroupId(), k -> new ArrayList<>());
             ruleInfos.add(ruleInfo);
         }
-        return sceneId2RuleInfoListMap;
+        return groupId2RuleInfoListMap;
     }
 
     @Override
-    public void fire(long sceneId, Object obj) {
-        KieSession kieSession = kieSessionHelper.getKieSessionBySceneId(sceneId);
+    public void fire(long groupId, Object obj) {
+        log.info("匹配参数：{}", JSON.toJSONString(obj));
+        KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(groupId);
         kieSession.insert(obj);
-        kieSession.fireAllRules();
+        int size = kieSession.fireAllRules();
+        log.info("匹配到 {} 规则", size);
         kieSession.dispose();
     }
 }

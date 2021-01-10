@@ -22,11 +22,11 @@ public class KieSessionHelper {
     /**
      * 获取KieSession
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      * @return KieSession
      */
-    public KieSession getKieSessionBySceneId(long sceneId) {
-        KieSession kieSession = initRuleLoader.getKieContainerBySceneId(sceneId).getKieBase().newKieSession();
+    public KieSession getKieSessionByGroupId(long groupId) {
+        KieSession kieSession = initRuleLoader.getKieContainerByGroupId(groupId).getKieBase().newKieSession();
         kieSession.setGlobal("logger", log);
         return kieSession;
     }

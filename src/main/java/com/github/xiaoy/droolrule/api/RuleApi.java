@@ -3,12 +3,10 @@ package com.github.xiaoy.droolrule.api;
 import com.github.xiaoy.droolrule.init.InitRuleLoader;
 import com.github.xiaoy.droolrule.param.FixedSectionParam;
 import com.github.xiaoy.droolrule.service.RuleInfoService;
+import com.github.xiaoy.droolrule.utils.SnowFlakeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -29,6 +27,15 @@ public class RuleApi {
     @Autowired
     private InitRuleLoader initRuleLoader;
 
+    @PostMapping("/insertRule/{jumpPoint}")
+    public long insertRule(@PathVariable("jumpPoint") String jumpPoint,
+                           @RequestParam("groupId") long groupId) throws Exception {
+        log.info("跳点类型：{}", jumpPoint);
+        long id = ruleInfoService.insertRule(jumpPoint, groupId);
+        log.info("规则 id：{},groupId：{}", id, groupId);
+        return groupId;
+    }
+
     /**
      * 构建模板，保存到数据库
      *
@@ -37,9 +44,10 @@ public class RuleApi {
     @PostMapping("/temp/{ruleGenName}")
     public long templateConverRule(@PathVariable("ruleGenName") String ruleGenName) throws Exception {
         log.info("生成器的名称：{}", ruleGenName);
-        long sceneId = ruleInfoService.templateConverRule(ruleGenName);
-        log.info("规则 sceneId：{}", sceneId);
-        return sceneId;
+        long groupId = SnowFlakeUtil.getFlowIdInstance().nextId();
+        long id = ruleInfoService.templateConverRule(ruleGenName, groupId);
+        log.info("规则 id：{},groupId：{}", id, groupId);
+        return groupId;
     }
 
     /**
@@ -53,37 +61,39 @@ public class RuleApi {
     }
 
     /**
-     * 重新加载给定场景下的规则
+     * 重新加载给定分组下的规则
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      */
-    @GetMapping("reload/{sceneId}")
-    public String reload(@PathVariable("sceneId") Long sceneId) {
-        log.info("reload scene:" + sceneId);
-        initRuleLoader.reload(sceneId);
+    @GetMapping("reload/{groupId}")
+    public String reload(@PathVariable("groupId") Long groupId) {
+        log.info("reload scene:" + groupId);
+        initRuleLoader.reload(groupId);
         return "success";
     }
 
     /**
-     * 触发给定场景规则
+     * 触发给定分组规则
      *
-     * @param sceneId 场景ID
+     * @param groupId 分组ID
      */
-    @GetMapping("fire/{sceneId}/{id}")
-    public Object fire(@PathVariable("sceneId") long sceneId,
+    @GetMapping("fire/{groupId}/{id}")
+    public Object fire(@PathVariable("groupId") long groupId,
                        @PathVariable("id") long id) {
-        log.info("fire scene sceneId:{},id:{}", sceneId, id);
+        log.info("fire scene groupId:{},id:{}", groupId, id);
 
         // id 查询出数据，组装成 对应的对象
         Object p1;
         if (id == 1) {
-            p1 = new FixedSectionParam("2", 5, "1", "1",
+            p1 = new FixedSectionParam("1", "2", 5,
                     new BigDecimal(1000000));
         } else {
-            p1 = new FixedSectionParam("1", new BigDecimal(1000000000),
-                    "1", "2", new BigDecimal(50000));
+            FixedSectionParam p = new FixedSectionParam("1", "2", new BigDecimal(10000000000L),
+                    new BigDecimal(50000));
+            p.setSalesNum(15);
+            p1 = p;
         }
-        ruleInfoService.fire(sceneId, p1);
+        ruleInfoService.fire(groupId, p1);
         return p1;
     }
 }

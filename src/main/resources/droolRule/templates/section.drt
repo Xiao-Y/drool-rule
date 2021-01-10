@@ -18,8 +18,7 @@ template "section_template"
 
 rule "范围-@{houseTypeName}-@{numMin}-@{numMax}"
 	when
-        $p : FixedSectionParam(jumpPointCondition == "2"
-            && houseType == "@{houseType}"
+        $p : FixedSectionParam(houseType == "@{houseType}"
             && @{numMin} <= salesNum
             && salesNum <= @{numMax});
     then
@@ -30,7 +29,7 @@ rule "范围-@{houseTypeName}-@{numMin}-@{numMax}"
             sumAmount = new BigDecimal(@{commission}).add(new BigDecimal(@{fixedAmount}));
         }
         $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
-        logger.info("匹配rule1-fixed_section：{}",$p);
+        logger.info("范围-@{houseTypeName}-@{numMin}-@{numMax}：{}",$p);
 
 end
 

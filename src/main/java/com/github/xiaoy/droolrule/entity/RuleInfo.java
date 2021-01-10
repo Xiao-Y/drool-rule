@@ -13,9 +13,9 @@ public class RuleInfo {
     @TableId("id")
     private Long id;
     /**
-     * 场景id，一个场景对应多个规则，一个场景对应一个业务场景，一个场景对应一个kmodule
+     * 分组id，一个分组对应多个规则，一个分组对应一个业务分组，一个分组对应一个kmodule
      */
-    private Long sceneId;
+    private Long groupId;
     /**
      * 规则生成器的名称
      *
