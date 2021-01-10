@@ -20,8 +20,8 @@ public interface RuleGen {
     /**
      * 根据传递进来的参数对象生规则
      */
-    default String generateRule() throws IOException {
-        String drlString = applyRuleTemplate();
+    default String generateRule(Object obj) throws Exception {
+        String drlString = applyRuleTemplate(obj);
         log.info("\n************ 生成的drl start ***********\n{}\n************ 生成的drl end ***********", drlString);
         return drlString;
     }
@@ -31,48 +31,20 @@ public interface RuleGen {
      *
      * @return
      */
-    default String applyRuleTemplate() throws IOException {
-        List<Map<String, Object>> data = prepareData();
+    default String applyRuleTemplate(Object obj) throws Exception {
+        List<Map<String, Object>> data = prepareData(obj);
         ObjectDataCompiler objectDataCompiler = new ObjectDataCompiler();
         ClassPathResource classPathResource = new ClassPathResource(getTemplateFileName());
         InputStream inputStream = classPathResource.getInputStream();
         return objectDataCompiler.compile(data, inputStream);
     }
 
-//    /**
-//     * 根据String格式的Drl生成Maven结构的规则
-//     *
-//     * @param rules
-//     */
-//    default void createOrRefreshDrlInMemory(List<String> rules) {
-//        for (String str : rules) {
-//            createOrRefreshDrlInMemory(str);
-//        }
-//    }
-
-//    /**
-//     * 根据String格式的Drl生成Maven结构的规则
-//     *
-//     * @param rule
-//     */
-//    default void createOrRefreshDrlInMemory(String rule) {
-//        KieServices kieServices = RuleUtils.getKieServices();
-//        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
-//        kieFileSystem.write("src/main/resources/droolRule" + UUID.randomUUID() + ".drl", rule);
-//        KieBuilder kb = kieServices.newKieBuilder(kieFileSystem).buildAll();
-//        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
-//            log.error("create rule in kieFileSystem Error", kb.getResults());
-//            throw new RuntimeException("生成规则文件失败");
-//        }
-//    }
-
-
     /**
      * 准备生成规则需要的数据，供模板使用
      *
      * @return
      */
-    List<Map<String, Object>> prepareData();
+    List<Map<String, Object>> prepareData(Object obj);
 
     /**
      * 获取模板文件名

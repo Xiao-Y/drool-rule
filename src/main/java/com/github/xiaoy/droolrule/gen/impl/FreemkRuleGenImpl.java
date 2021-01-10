@@ -1,18 +1,13 @@
-package com.github.billow.droolrule.test2;
+package com.github.xiaoy.droolrule.gen.impl;
 
-import com.github.billow.droolrule.DroolsApplicationTests;
+import com.github.xiaoy.droolrule.gen.RuleGen;
 import com.github.xiaoy.droolrule.gen.param.FreemkTemp;
-import com.github.xiaoy.droolrule.param.FixedSectionParam;
-import com.github.xiaoy.droolrule.utils.KieSessionHelper;
 import freemarker.template.Template;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -20,42 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author liuyongtao
- * @since 2021-1-8 8:28
- */
-@Slf4j
-public class RuleTest extends DroolsApplicationTests {
-
-    @Autowired
-    private KieSessionHelper kieSessionHelper;
-
+@Component
+public class FreemkRuleGenImpl implements RuleGen {
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
 
-    @Test
-    public void test2() {
-
-        FixedSectionParam param = new FixedSectionParam("1", "2", new BigDecimal(100000000),
-                new BigDecimal(50000));
-        KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(333);
-        kieSession.setGlobal("logger", log);
-
-        kieSession.insert(param);
-        int size = kieSession.fireAllRules();
-        log.info("匹配到：{}", size);
-        log.info("结果：{}", param);
-
-    }
-
-    @Test
-    public void test3() throws Exception {
-        Template template = freeMarkerConfigurer.getConfiguration().getTemplate("fixed.ftl");
-        List<FreemkTemp> list = this.prepareData();
-        Map<String,Object> maps = new HashMap<>();
-        maps.put("root",list);
-        String s = FreeMarkerTemplateUtils.processTemplateIntoString(template, maps);
-        System.out.println(s);
+    @Override
+    public List<Map<String, Object>> prepareData(Object obj) {
+        return null;
     }
 
     public List<FreemkTemp> prepareData() {
@@ -116,6 +83,20 @@ public class RuleTest extends DroolsApplicationTests {
 //        data4.put("commission", new BigDecimal(200));
 //        data4.put("fixedAmount", new BigDecimal(18000));
 //        return Arrays.asList(data, data2, data3, data4);
-        return Arrays.asList(temp,temp2);
+        return Arrays.asList(temp, temp2);
+    }
+
+    @Override
+    public String getTemplateFileName() {
+        return "fixed.ftl";
+    }
+
+    @Override
+    public String applyRuleTemplate(Object obj) throws Exception {
+        List<FreemkTemp> data = prepareData();
+        Map<String, Object> maps = new HashMap<>();
+        maps.put("root", data);
+        Template template = freeMarkerConfigurer.getConfiguration().getTemplate(getTemplateFileName());
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, maps);
     }
 }

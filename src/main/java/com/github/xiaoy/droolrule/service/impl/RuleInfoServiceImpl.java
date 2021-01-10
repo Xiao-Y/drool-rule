@@ -43,7 +43,7 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
     @Override
     public long templateConverRule(String ruleGenName, long groupId) throws Exception {
         RuleGen ruleGen = ruleGenMap.get(ruleGenName);
-        String drlString = ruleGen.generateRule();
+        String drlString = ruleGen.generateRule(null);
 
         // 设置当前生成器的其它数据为无效
 //        LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();

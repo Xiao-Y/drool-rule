@@ -10,7 +10,7 @@ import java.util.Map;
 public class BaseRuleGen implements RuleGen {
 
     @Override
-    public List<Map<String, Object>> prepareData() {
+    public List<Map<String, Object>> prepareData(Object obj) {
         throw new RuntimeException("无法设置参数");
     }
 

@@ -1,6 +1,7 @@
 package com.github.xiaoy.droolrule.gen.impl;
 
 import com.github.xiaoy.droolrule.gen.RuleGen;
+import com.github.xiaoy.droolrule.gen.param.FixedTemp;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -9,13 +10,27 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class FixedRuleGenImpl implements RuleGen {
 
 
     @Override
-    public List<Map<String, Object>> prepareData() {
+    public List<Map<String, Object>> prepareData(Object obj) {
+//        if (obj != null) {
+//            List<FixedTemp> temps = (List<FixedTemp>) obj;
+//            List<Object> collect = temps.stream().map(m -> {
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("houseType", m.getHouseType());
+//                data.put("houseTypeName", m.getHouseTypeName());
+//                data.put("salesAmount", m.getSalesAmount());
+//                data.put("commission", m.getCommission().setScale(2, RoundingMode.HALF_UP));
+//                data.put("fixedAmount", m.getFixedAmount());
+//                return data;
+//            }).collect(Collectors.toList());
+//        }
+
         Map<String, Object> data = new HashMap<>();
 
         data.put("houseType", "1");

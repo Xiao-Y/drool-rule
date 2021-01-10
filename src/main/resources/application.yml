@@ -12,7 +12,9 @@ spring:
     active: dev
   application:
     name: drool-rule
-
+  freemarker:
+    cache: false
+    template-loader-path: classpath:/droolRule/templates/
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml

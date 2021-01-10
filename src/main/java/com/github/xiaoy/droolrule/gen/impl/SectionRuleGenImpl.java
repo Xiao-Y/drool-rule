@@ -1,18 +1,36 @@
 package com.github.xiaoy.droolrule.gen.impl;
 
 import com.github.xiaoy.droolrule.gen.RuleGen;
+import com.github.xiaoy.droolrule.gen.param.FixedTemp;
+import com.github.xiaoy.droolrule.gen.param.SectionTemp;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class SectionRuleGenImpl implements RuleGen {
 
 
     @Override
-    public List<Map<String, Object>> prepareData() {
+    public List<Map<String, Object>> prepareData(Object obj) {
+
+//        if (obj != null) {
+//            List<SectionTemp> temps = (List<SectionTemp>) obj;
+//            List<Map<String, Object>> collect = temps.stream().map(m -> {
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("houseType", m.getHouseType());
+//                data.put("houseTypeName", m.getHouseTypeName());
+//                data.put("numMin", m.getNumMin());
+//                data.put("numMax", m.getNumMax());
+//                data.put("commission", m.getCommission().setScale(2, RoundingMode.HALF_UP));
+//                data.put("fixedAmount", m.getFixedAmount());
+//                return data;
+//            }).collect(Collectors.toList());
+//        }
+
         Map<String, Object> data1 = new HashMap<>();
         data1.put("houseType", "1");
         data1.put("houseTypeName", "住宅");
@@ -69,7 +87,7 @@ public class SectionRuleGenImpl implements RuleGen {
         data32.put("commission", new BigDecimal(0.19).setScale(2, RoundingMode.HALF_UP));
         data32.put("fixedAmount", new BigDecimal(48000));
 
-        return Arrays.asList(data1, data11, data12,data21,data22, data32, data31);
+        return Arrays.asList(data1, data11, data12, data21, data22, data32, data31);
 
 
     }
