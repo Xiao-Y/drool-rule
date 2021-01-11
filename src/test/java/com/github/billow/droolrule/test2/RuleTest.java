@@ -1,8 +1,8 @@
 package com.github.billow.droolrule.test2;
 
 import com.github.billow.droolrule.DroolsApplicationTests;
-import com.github.xiaoy.droolrule.gen.param.FreemkTemp;
-import com.github.xiaoy.droolrule.param.FixedSectionParam;
+import com.github.xiaoy.droolrule.gen.param.DeveloperSettlementTemp;
+import com.github.xiaoy.droolrule.param.DeveloperSettlementParam;
 import com.github.xiaoy.droolrule.utils.KieSessionHelper;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -36,8 +35,8 @@ public class RuleTest extends DroolsApplicationTests {
     @Test
     public void test2() {
 
-        FixedSectionParam param = new FixedSectionParam("1", "2", new BigDecimal(100000000),
-                new BigDecimal(50000));
+        DeveloperSettlementParam param = new DeveloperSettlementParam("2","1", "2",
+                new BigDecimal(100000000),new BigDecimal(50000));
         KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(333);
         kieSession.setGlobal("logger", log);
 
@@ -50,16 +49,16 @@ public class RuleTest extends DroolsApplicationTests {
 
     @Test
     public void test3() throws Exception {
-        Template template = freeMarkerConfigurer.getConfiguration().getTemplate("fixed.ftl");
-        List<FreemkTemp> list = this.prepareData();
+        Template template = freeMarkerConfigurer.getConfiguration().getTemplate("DeveloperSettlement.ftl");
+        List<DeveloperSettlementTemp> list = this.prepareData();
         Map<String,Object> maps = new HashMap<>();
         maps.put("root",list);
         String s = FreeMarkerTemplateUtils.processTemplateIntoString(template, maps);
         System.out.println(s);
     }
 
-    public List<FreemkTemp> prepareData() {
-        FreemkTemp temp = new FreemkTemp();
+    public List<DeveloperSettlementTemp> prepareData() {
+        DeveloperSettlementTemp temp = new DeveloperSettlementTemp();
         temp.setJumpPoint("1");
         temp.setHouseType("1");
         temp.setHouseTypeName("住宅");
@@ -68,7 +67,7 @@ public class RuleTest extends DroolsApplicationTests {
         temp.setCommission(new BigDecimal(100));
         temp.setFixedAmount(new BigDecimal(3000));
 
-        FreemkTemp temp2 = new FreemkTemp();
+        DeveloperSettlementTemp temp2 = new DeveloperSettlementTemp();
         temp2.setJumpPoint("2");
         temp2.setHouseType("2");
         temp2.setNumMin(2);

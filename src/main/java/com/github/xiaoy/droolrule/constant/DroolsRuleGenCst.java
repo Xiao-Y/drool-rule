@@ -1,14 +1,10 @@
 package com.github.xiaoy.droolrule.constant;
 
-import com.github.xiaoy.droolrule.gen.impl.FixedRuleGenImpl;
-import com.github.xiaoy.droolrule.gen.impl.FreemkRuleGenImpl;
-import com.github.xiaoy.droolrule.gen.impl.SectionRuleGenImpl;
+import com.github.xiaoy.droolrule.gen.impl.DeveloperSettlementRuleGenImpl;
 
 public class DroolsRuleGenCst {
 
-    protected final static String FIXED_RULE_GEN = toLowerCaseFirstOne(FixedRuleGenImpl.class.getSimpleName());
-    protected final static String SECTION_RULE_GEN = toLowerCaseFirstOne(SectionRuleGenImpl.class.getSimpleName());
-    protected final static String FREEMK_RULE_GEN = toLowerCaseFirstOne(FreemkRuleGenImpl.class.getSimpleName());
+    protected final static String DEVELOPER_SETTLEMENT_RULE_GEN = toLowerCaseFirstOne(DeveloperSettlementRuleGenImpl.class.getSimpleName());
 
     /**
      * 首字母转小写

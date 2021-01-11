@@ -1,14 +1,12 @@
 package com.github.xiaoy.droolrule.api;
 
 import com.github.xiaoy.droolrule.init.InitRuleLoader;
-import com.github.xiaoy.droolrule.param.FixedSectionParam;
+import com.github.xiaoy.droolrule.param.DeveloperSettlementParam;
 import com.github.xiaoy.droolrule.service.RuleInfoService;
-import com.github.xiaoy.droolrule.utils.SnowFlakeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 /**
@@ -27,25 +25,11 @@ public class RuleApi {
     @Autowired
     private InitRuleLoader initRuleLoader;
 
-    @PostMapping("/insertRule/{jumpPoint}")
-    public long insertRule(@PathVariable("jumpPoint") String jumpPoint,
+    @PostMapping("/insertRule/{tempCode}")
+    public long insertRule(@PathVariable("tempCode") String tempCode,
                            @RequestParam("groupId") long groupId) throws Exception {
-        log.info("跳点类型：{}", jumpPoint);
-        long id = ruleInfoService.insertRule(jumpPoint, groupId);
-        log.info("规则 id：{},groupId：{}", id, groupId);
-        return groupId;
-    }
-
-    /**
-     * 构建模板，保存到数据库
-     *
-     * @throws IOException
-     */
-    @PostMapping("/temp/{ruleGenName}")
-    public long templateConverRule(@PathVariable("ruleGenName") String ruleGenName) throws Exception {
-        log.info("生成器的名称：{}", ruleGenName);
-        long groupId = SnowFlakeUtil.getFlowIdInstance().nextId();
-        long id = ruleInfoService.templateConverRule(ruleGenName, groupId);
+        log.info("模板生成类型：{}", tempCode);
+        long id = ruleInfoService.insertRule(tempCode, groupId);
         log.info("规则 id：{},groupId：{}", id, groupId);
         return groupId;
     }
@@ -84,14 +68,18 @@ public class RuleApi {
 
         // id 查询出数据，组装成 对应的对象
         Object p1;
-        if (id == 1) {
-            p1 = new FixedSectionParam("1", "2", 5,
+        if (id == 11) {
+            p1 = new DeveloperSettlementParam("1", "1", "2",
+                    new BigDecimal(10000000000L), new BigDecimal(50000));
+        } else if (id == 12) {
+            p1 = new DeveloperSettlementParam("1", "2", "2",
+                    new BigDecimal(10000000000L), new BigDecimal(50000));
+        } else if (id == 21) {
+            p1 = new DeveloperSettlementParam("2", "1", "2", 15,
                     new BigDecimal(1000000));
         } else {
-            FixedSectionParam p = new FixedSectionParam("1", "2", new BigDecimal(10000000000L),
-                    new BigDecimal(50000));
-            p.setSalesNum(15);
-            p1 = p;
+            p1 = new DeveloperSettlementParam("2", "2", "2", 15,
+                    new BigDecimal(1000000));
         }
         ruleInfoService.fire(groupId, p1);
         return p1;

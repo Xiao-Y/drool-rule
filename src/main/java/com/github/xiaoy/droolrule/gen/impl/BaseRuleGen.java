@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class BaseRuleGen implements RuleGen {
+public class BaseRuleGen extends RuleGen {
 
     @Override
     public List<Map<String, Object>> prepareData(Object obj) {

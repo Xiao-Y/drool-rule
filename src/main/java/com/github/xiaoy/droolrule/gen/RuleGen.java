@@ -1,26 +1,30 @@
 package com.github.xiaoy.droolrule.gen;
 
-import org.drools.template.ObjectDataCompiler;
+import freemarker.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 规则生成器
  */
-public interface RuleGen {
+public abstract class RuleGen<T> {
 
-    Logger log = LoggerFactory.getLogger(RuleGen.class);
+    protected final static Logger log = LoggerFactory.getLogger(RuleGen.class);
+
+    @Autowired
+    private FreeMarkerConfigurer freeMarkerConfigurer;
 
     /**
      * 根据传递进来的参数对象生规则
      */
-    default String generateRule(Object obj) throws Exception {
+    public String generateRule(Object obj) throws Exception {
         String drlString = applyRuleTemplate(obj);
         log.info("\n************ 生成的drl start ***********\n{}\n************ 生成的drl end ***********", drlString);
         return drlString;
@@ -31,12 +35,12 @@ public interface RuleGen {
      *
      * @return
      */
-    default String applyRuleTemplate(Object obj) throws Exception {
-        List<Map<String, Object>> data = prepareData(obj);
-        ObjectDataCompiler objectDataCompiler = new ObjectDataCompiler();
-        ClassPathResource classPathResource = new ClassPathResource(getTemplateFileName());
-        InputStream inputStream = classPathResource.getInputStream();
-        return objectDataCompiler.compile(data, inputStream);
+    private String applyRuleTemplate(Object obj) throws Exception {
+        List<T> data = prepareData(obj);
+        Map<String, Object> maps = new HashMap<>();
+        maps.put("root", data);
+        Template template = freeMarkerConfigurer.getConfiguration().getTemplate(getTemplateFileName());
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, maps);
     }
 
     /**
@@ -44,13 +48,13 @@ public interface RuleGen {
      *
      * @return
      */
-    List<Map<String, Object>> prepareData(Object obj);
+    protected abstract List<T> prepareData(Object obj);
 
     /**
      * 获取模板文件名
      *
      * @return
      */
-    String getTemplateFileName();
+    protected abstract String getTemplateFileName();
 
 }

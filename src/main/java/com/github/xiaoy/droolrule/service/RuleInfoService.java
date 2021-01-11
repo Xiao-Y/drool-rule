@@ -16,24 +16,13 @@ public interface RuleInfoService extends IService<RuleInfo> {
     /**
      * 模板转换规则语句
      *
-     * @param jumpPoint: 跳点类型
-     * @param groupId:            分组id,不同规则可以分到一个组
+     * @param tempCode: 模板生成类型
+     * @param groupId:  分组id,不同规则可以分到一个组
      * @author billow
      * @Date 2021/1/8 21:30
      * @return: long
      **/
-    long insertRule(String jumpPoint, long groupId) throws Exception;
-
-    /**
-     * 模板转换规则语句
-     *
-     * @param ruleGenName: 生成器名称。具体类型参见 {@link DroolsRuleGenCst}
-     * @param groupId:     分组id,不同规则可以分到一个组
-     * @author billow
-     * @Date 2021/1/8 21:30
-     * @return: long
-     **/
-    long templateConverRule(String ruleGenName, long groupId) throws Exception;
+    long insertRule(String tempCode, long groupId) throws Exception;
 
     /**
      * 获取给定分组下的规则信息列表

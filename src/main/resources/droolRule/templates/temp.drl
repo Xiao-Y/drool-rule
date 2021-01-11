@@ -1,0 +1,224 @@
+package DeveloperSettlementParam;
+
+import com.github.xiaoy.droolrule.param.DeveloperSettlementParam;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+global org.slf4j.Logger logger
+
+rule "固定-固定-住宅-100"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "1"
+            && houseType == "1"
+            && salesAmount >= 500);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(100).add(new BigDecimal(30));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-固定-住宅-100：{}",$p);
+end
+
+rule "固定-固定-小于150w商铺-1,000"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "1"
+            && houseType == "2"
+            && salesAmount >= 1000);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(1000).add(new BigDecimal(50));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-固定-小于150w商铺-1,000：{}",$p);
+end
+
+rule "固定-固定-150-300w商铺-1,500"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "1"
+            && houseType == "3"
+            && salesAmount >= 2000);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(1500).add(new BigDecimal(100));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-固定-150-300w商铺-1,500：{}",$p);
+end
+
+rule "固定-固定-300w以上商铺-2,000"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "1"
+            && houseType == "4"
+            && salesAmount >= 2500);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(2000).add(new BigDecimal(150));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-固定-300w以上商铺-2,000：{}",$p);
+end
+
+rule "固定-点数-住宅-0.02"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "2"
+            && houseType == "1"
+            && salesAmount >= 500);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.02)).add(new BigDecimal(30));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-点数-住宅-0.02：{}",$p);
+end
+
+rule "固定-点数-小于150w商铺-0.04"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "2"
+            && houseType == "2"
+            && salesAmount >= 1000);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.04)).add(new BigDecimal(50));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-点数-小于150w商铺-0.04：{}",$p);
+end
+
+rule "固定-点数-150-300w商铺-0.08"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "2"
+            && houseType == "3"
+            && salesAmount >= 2000);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.08)).add(new BigDecimal(100));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-点数-150-300w商铺-0.08：{}",$p);
+end
+
+rule "固定-固定-300w以上商铺-0.1"
+    when
+        $p : DeveloperSettlementParam(jumpPoint == "1"
+            && commissionType == "1"
+            && houseType == "4"
+            && salesAmount >= 2500);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(0.1).add(new BigDecimal(150));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("固定-固定-300w以上商铺-0.1：{}",$p);
+end
+
+rule "范围-固定-住宅-100"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "1"
+            && houseType == "1"
+            && 0 <= salesNum
+            && salesNum <= 10);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(100).add(new BigDecimal(30));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-固定-住宅-100：{}",$p);
+end
+
+rule "范围-固定-小于150w商铺-1,000"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "1"
+            && houseType == "2"
+            && 11 <= salesNum
+            && salesNum <= 20);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(1000).add(new BigDecimal(50));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-固定-小于150w商铺-1,000：{}",$p);
+end
+
+rule "范围-固定-150-300w商铺-1,500"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "1"
+            && houseType == "3"
+            && 21 <= salesNum
+            && salesNum <= 30);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(1500).add(new BigDecimal(100));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-固定-150-300w商铺-1,500：{}",$p);
+end
+
+rule "范围-固定-300w以上商铺-2,000"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "1"
+            && houseType == "4"
+            && 21 <= salesNum
+            && salesNum <= 2147483647);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(2000).add(new BigDecimal(150));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-固定-300w以上商铺-2,000：{}",$p);
+end
+
+rule "范围-点数-住宅-0.02"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "2"
+            && houseType == "1"
+            && 0 <= salesNum
+            && salesNum <= 10);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.02)).add(new BigDecimal(30));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-点数-住宅-0.02：{}",$p);
+end
+
+rule "范围-点数-小于150w商铺-0.04"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "2"
+            && houseType == "2"
+            && 11 <= salesNum
+            && salesNum <= 20);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.04)).add(new BigDecimal(50));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-点数-小于150w商铺-0.04：{}",$p);
+end
+
+rule "范围-点数-150-300w商铺-0.08"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "2"
+            && houseType == "3"
+            && 21 <= salesNum
+            && salesNum <= 30);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = $p.getAmount().multiply(new BigDecimal(0.08)).add(new BigDecimal(100));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-点数-150-300w商铺-0.08：{}",$p);
+end
+
+rule "范围-固定-300w以上商铺-0.1"
+    when
+         $p : DeveloperSettlementParam(jumpPoint == "2"
+            && commissionType == "1"
+            && houseType == "4"
+            && 30 <= salesNum
+            && salesNum <= 2147483647);
+    then
+        BigDecimal sumAmount = BigDecimal.ZERO;
+        sumAmount = new BigDecimal(0.1).add(new BigDecimal(150));
+        $p.getResult().add(sumAmount.setScale(2, RoundingMode.HALF_UP));
+        logger.info("范围-固定-300w以上商铺-0.1：{}",$p);
+end
+

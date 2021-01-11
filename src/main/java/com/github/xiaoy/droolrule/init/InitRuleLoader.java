@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -98,10 +99,11 @@ public class InitRuleLoader implements ApplicationRunner {
      *
      * @param groupId 分组ID
      */
-    public void reload(Long groupId) {
+    public boolean reload(Long groupId) {
         List<RuleInfo> ruleInfos = ruleInfoService.getRuleInfoListByGroupId(groupId);
-        reload(groupId, ruleInfos);
-        log.info("reload success");
+        boolean reload = reload(groupId, ruleInfos);
+        log.info("reload success:{}", reload);
+        return reload;
     }
 
     /**
@@ -110,7 +112,11 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId   分组ID
      * @param ruleInfos 规则列表
      */
-    private void reload(long groupId, List<RuleInfo> ruleInfos) {
+    private boolean reload(long groupId, List<RuleInfo> ruleInfos) {
+        if (CollectionUtils.isEmpty(ruleInfos)) {
+            log.info("规则组为空，不添加");
+            return false;
+        }
         KieServices kieServices = KieServices.get();
         KieModuleModel kieModuleModel = kieServices.newKieModuleModel();
         KieBaseModel kieBaseModel = kieModuleModel.newKieBaseModel(buildKbaseName(groupId));
@@ -136,5 +142,6 @@ public class InitRuleLoader implements ApplicationRunner {
 
         KieContainer kieContainer = kieServices.newKieContainer(kieServices.getRepository().getDefaultReleaseId());
         kieContainerMap.put(buildKcontainerName(groupId), kieContainer);
+        return true;
     }
 }

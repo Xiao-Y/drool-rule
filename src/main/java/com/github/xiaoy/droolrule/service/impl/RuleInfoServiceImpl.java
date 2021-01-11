@@ -3,10 +3,9 @@ package com.github.xiaoy.droolrule.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.xiaoy.droolrule.constant.JumpPointEnum;
+import com.github.xiaoy.droolrule.constant.TemplateGenEnum;
 import com.github.xiaoy.droolrule.entity.RuleInfo;
 import com.github.xiaoy.droolrule.gen.RuleGen;
-import com.github.xiaoy.droolrule.gen.impl.BaseRuleGen;
 import com.github.xiaoy.droolrule.mapper.RuleInfoMapper;
 import com.github.xiaoy.droolrule.service.RuleInfoService;
 import com.github.xiaoy.droolrule.utils.KieSessionHelper;
@@ -26,23 +25,19 @@ import java.util.*;
 public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> implements RuleInfoService {
 
     @Autowired
-    private BaseRuleGen baseRuleGen;
-
-    @Autowired
     private KieSessionHelper kieSessionHelper;
 
     @Autowired
     private Map<String, RuleGen> ruleGenMap;
 
     @Override
-    public long insertRule(String jumpPoint, long groupId) throws Exception {
-        String gen = JumpPointEnum.getRuleGenByJumpPoint(jumpPoint);
-        return this.templateConverRule(gen, groupId);
-    }
-
-    @Override
-    public long templateConverRule(String ruleGenName, long groupId) throws Exception {
+    public long insertRule(String tempCode, long groupId) throws Exception {
+        String ruleGenName = TemplateGenEnum.getRuleGenByTempCode(tempCode);
         RuleGen ruleGen = ruleGenMap.get(ruleGenName);
+        if (ruleGen == null) {
+            throw new RuntimeException("没有找到对应的模板生成器，tempCode：" + tempCode);
+        }
+        // 模板转换规则
         String drlString = ruleGen.generateRule(null);
 
         // 设置当前生成器的其它数据为无效
@@ -90,7 +85,7 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
         KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(groupId);
         kieSession.insert(obj);
         int size = kieSession.fireAllRules();
-        log.info("匹配到 {} 规则", size);
+        log.info("匹配到 {} 个规则", size);
         kieSession.dispose();
     }
 }
