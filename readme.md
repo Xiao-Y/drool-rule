@@ -61,6 +61,9 @@ mybatis-plus 3.2.0
 `com.github.xiaoy.droolrule.gen.param.DeveloperSettlementTemp` 模板对应参数，用于生成模板。
 业务在页面上修改规则时，会将必要的参数填充进去，以便生成对应的 `drl` 文件。
 
+`com.github.xiaoy.droolrule.param.DeveloperSettlementParam` 用于匹配规则，返回值会写入到 `List<BigDecimal> result` 里面，
+因为可能会匹配到多个，所以使用集合。
+
 `com.github.xiaoy.droolrule.gen.impl.BaseRuleGen` 模板生成类基类，提供公用方法
 
 `com.github.xiaoy.droolrule.gen.impl.DeveloperSettlementRuleGenImpl` 对应模板的生成器，调用 `com.github.xiaoy.droolrule.gen.RuleGen.generateRule`
@@ -74,3 +77,5 @@ mybatis-plus 3.2.0
  
  `com.github.xiaoy.droolrule.api.RuleApi` 提供一个示例 api
  
+ 
+ 项目地址：https://github.com/Xiao-Y/drool-rule
