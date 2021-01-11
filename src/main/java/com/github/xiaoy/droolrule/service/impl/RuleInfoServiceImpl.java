@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoy.droolrule.constant.TemplateGenEnum;
 import com.github.xiaoy.droolrule.entity.RuleInfo;
 import com.github.xiaoy.droolrule.gen.RuleGen;
+import com.github.xiaoy.droolrule.init.InitRuleLoader;
 import com.github.xiaoy.droolrule.mapper.RuleInfoMapper;
 import com.github.xiaoy.droolrule.service.RuleInfoService;
 import com.github.xiaoy.droolrule.utils.KieSessionHelper;
@@ -30,6 +31,9 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
     @Autowired
     private Map<String, RuleGen> ruleGenMap;
 
+    @Autowired
+    private InitRuleLoader initRuleLoader;
+
     @Override
     public long insertRule(String tempCode, long groupId) throws Exception {
         String ruleGenName = TemplateGenEnum.getRuleGenByTempCode(tempCode);
@@ -40,13 +44,13 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
         // 模板转换规则
         String drlString = ruleGen.generateRule(null);
 
-        // 设置当前生成器的其它数据为无效
-//        LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.eq(RuleInfo::getRuleGenName, ruleGenName)
-//                .eq(RuleInfo::getValidInd, true);
-//        RuleInfo info = new RuleInfo();
-//        info.setValidInd(false);
-//        this.update(info, wrapper);
+        // 设置指定分组的规则为删除
+        LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(RuleInfo::getGroupId, groupId)
+                .eq(RuleInfo::getValidInd, true);
+        RuleInfo info = new RuleInfo();
+        info.setIsDelete(true);
+        this.update(info, wrapper);
 
         // 保存新的到数据库
         RuleInfo ruleInfo = new RuleInfo();
@@ -64,14 +68,19 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
     @Override
     public List<RuleInfo> getRuleInfoListByGroupId(Long groupId) {
         LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(RuleInfo::getGroupId, groupId);
+        wrapper.eq(RuleInfo::getGroupId, groupId)
+                .eq(RuleInfo::getValidInd, true)
+                .eq(RuleInfo::getIsDelete, false);
         return this.list(wrapper);
     }
 
     @Override
     public Map<Long, List<RuleInfo>> getRuleInfoListMap() {
         Map<Long, List<RuleInfo>> groupId2RuleInfoListMap = new HashMap<>();
-        List<RuleInfo> allRuleInfos = this.list();
+        LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(RuleInfo::getValidInd, true)
+                .eq(RuleInfo::getIsDelete, false);
+        List<RuleInfo> allRuleInfos = this.list(wrapper);
         for (RuleInfo ruleInfo : allRuleInfos) {
             List<RuleInfo> ruleInfos = groupId2RuleInfoListMap.computeIfAbsent(ruleInfo.getGroupId(), k -> new ArrayList<>());
             ruleInfos.add(ruleInfo);
@@ -87,5 +96,16 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
         int size = kieSession.fireAllRules();
         log.info("匹配到 {} 个规则", size);
         kieSession.dispose();
+    }
+
+    @Override
+    public void delRule(long groupId) {
+        LambdaQueryWrapper<RuleInfo> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(RuleInfo::getGroupId, groupId)
+                .eq(RuleInfo::getValidInd, true);
+        RuleInfo info = new RuleInfo();
+        info.setIsDelete(true);
+        this.update(info, wrapper);
+        initRuleLoader.delKieContainerByGroupId(groupId);
     }
 }

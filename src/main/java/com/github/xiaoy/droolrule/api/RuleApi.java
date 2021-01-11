@@ -28,10 +28,17 @@ public class RuleApi {
     @PostMapping("/insertRule/{tempCode}")
     public long insertRule(@PathVariable("tempCode") String tempCode,
                            @RequestParam("groupId") long groupId) throws Exception {
-        log.info("模板生成类型：{}", tempCode);
+        log.info("模板生成类型：{},规则分组：{}", tempCode, groupId);
         long id = ruleInfoService.insertRule(tempCode, groupId);
         log.info("规则 id：{},groupId：{}", id, groupId);
         return groupId;
+    }
+
+    @PostMapping("/delRule/{groupId}")
+    public String delRule(@PathVariable("groupId") long groupId) throws Exception {
+        log.info("规则分组：{}", groupId);
+        ruleInfoService.delRule(groupId);
+        return "success";
     }
 
     /**

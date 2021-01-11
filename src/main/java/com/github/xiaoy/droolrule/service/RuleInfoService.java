@@ -49,4 +49,14 @@ public interface RuleInfoService extends IService<RuleInfo> {
      * @return: void
      **/
     void fire(long groupId, Object obj);
+
+    /**
+     * 删除给定分组规则
+     *
+     * @param groupId: 分组ID
+     * @author billow
+     * @Date 2021/1/10 18:04
+     * @return: void
+     **/
+    void delRule(long groupId);
 }

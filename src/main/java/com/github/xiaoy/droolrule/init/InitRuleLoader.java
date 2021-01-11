@@ -78,8 +78,24 @@ public class InitRuleLoader implements ApplicationRunner {
         return "ksession_" + groupId;
     }
 
+    /**
+     * 获取 KieContainer
+     *
+     * @param groupId 分组ID
+     * @return KieContainer
+     */
     public KieContainer getKieContainerByGroupId(long groupId) {
         return kieContainerMap.get(buildKcontainerName(groupId));
+    }
+
+    /**
+     * 删除 KieContainer
+     *
+     * @param groupId 分组ID
+     * @return KieContainer
+     */
+    public KieContainer delKieContainerByGroupId(long groupId) {
+        return kieContainerMap.remove(buildKcontainerName(groupId));
     }
 
     /**
