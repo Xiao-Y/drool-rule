@@ -1,6 +1,5 @@
 package com.github.xiaoy.droolrule.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.xiaoy.droolrule.constant.TemplateGenEnum;
@@ -90,7 +89,7 @@ public class RuleInfoServiceImpl extends ServiceImpl<RuleInfoMapper, RuleInfo> i
 
     @Override
     public void fire(long groupId, Object obj) {
-        log.info("匹配参数：{}", JSON.toJSONString(obj));
+        log.info("匹配参数：{}", obj);
         KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(groupId);
         kieSession.insert(obj);
         int size = kieSession.fireAllRules();
