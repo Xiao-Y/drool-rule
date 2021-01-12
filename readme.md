@@ -45,7 +45,7 @@ mybatis-plus 3.2.0
 
 2.`RuleApplication` 启动
 
-3.访问 `http:127.0.0.1:8080/insertRule/{tempCode}`
+3.访问 `http:127.0.0.1:8080/insertRule/{tempCode}?groupId=xxx`
  `tempCode` 可以查看 `com.github.xiaoy.droolrule.constant.TemplateGenEnum` 可以根据不同的生成器生成不同的 `drl`
 
 4.第一次生成模板时，需要访问 `http:127.0.0.1:8080/reload/{groupId}`  将指定的规则加到内存中。
