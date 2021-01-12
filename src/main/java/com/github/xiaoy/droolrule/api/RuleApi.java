@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * 规则配置api
@@ -77,16 +79,16 @@ public class RuleApi {
         Object p1;
         if (id == 11) {
             p1 = new DeveloperSettlementParam("1", "1", "2",
-                    new BigDecimal(10000000000L), new BigDecimal(50000));
+                    new BigDecimal(10000000000L), new BigDecimal(50000), "2021-01-12");
         } else if (id == 12) {
             p1 = new DeveloperSettlementParam("1", "2", "2",
-                    new BigDecimal(10000000000L), new BigDecimal(50000));
+                    new BigDecimal(10000000000L), new BigDecimal(50000), "2021-01-12");
         } else if (id == 21) {
             p1 = new DeveloperSettlementParam("2", "1", "2", 15,
-                    new BigDecimal(1000000));
+                    new BigDecimal(1000000), "2021-01-12");
         } else {
             p1 = new DeveloperSettlementParam("2", "2", "2", 15,
-                    new BigDecimal(1000000));
+                    new BigDecimal(1000000), "2021-01-12");
         }
         ruleInfoService.fire(groupId, p1);
         return p1;

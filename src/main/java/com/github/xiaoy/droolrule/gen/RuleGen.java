@@ -25,7 +25,7 @@ public abstract class RuleGen<T> {
      * 根据传递进来的参数对象生规则
      */
     public String generateRule(Object obj) throws Exception {
-        String drlString = applyRuleTemplate(obj);
+        String drlString = this.applyRuleTemplate(obj);
         log.info("\n************ 生成的drl start ***********\n{}\n************ 生成的drl end ***********", drlString);
         return drlString;
     }
@@ -36,7 +36,8 @@ public abstract class RuleGen<T> {
      * @return
      */
     private String applyRuleTemplate(Object obj) throws Exception {
-        List<T> data = prepareData(obj);
+        List<T> data = this.prepareData(obj);
+        this.checkTempData(data);
         Map<String, Object> maps = new HashMap<>();
         maps.put("root", data);
         Template template = freeMarkerConfigurer.getConfiguration().getTemplate(getTemplateFileName());
@@ -49,6 +50,14 @@ public abstract class RuleGen<T> {
      * @return
      */
     protected abstract List<T> prepareData(Object obj);
+
+    /**
+     * 检查模板数据
+     *
+     * @param data 模板数据
+     */
+    protected void checkTempData(List<T> data) {
+    }
 
     /**
      * 获取模板文件名

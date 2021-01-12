@@ -3,25 +3,33 @@ package DeveloperSettlementParam;
 import com.github.xiaoy.droolrule.param.DeveloperSettlementParam;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 global org.slf4j.Logger logger
 
+// 处理时间的function
+function LocalDate checkDate(String et){
+    return LocalDate.parse(et, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+}
 <#list root as rule>
+
 rule "${(rule.jumpPoint == "1") ? string("固定","范围")}-${(rule.commissionType == "1") ? string("固定","点数")}-${rule.houseTypeName}-${rule.commission}"
     when
-        <#if rule.jumpPoint == "1">
-        $p : DeveloperSettlementParam(jumpPoint == "${rule.jumpPoint}"
+        $p : DeveloperSettlementParam(
+            jumpPoint == "${rule.jumpPoint}"
             && commissionType == "${rule.commissionType}"
             && houseType == "${rule.houseType}"
-            && salesAmount >= ${rule.salesAmount?c});
+            && checkDate(assessmentDate).compareTo(checkDate("${rule.startDate}")) >= 0
+            && checkDate(assessmentDate).compareTo(checkDate("${rule.endDate}")) <= 0
+        <#if rule.jumpPoint == "1">
+            && salesAmount >= ${rule.salesAmount?c}
         </#if>
         <#if rule.jumpPoint == "2">
-         $p : DeveloperSettlementParam(jumpPoint == "${rule.jumpPoint}"
-            && commissionType == "${rule.commissionType}"
-            && houseType == "${rule.houseType}"
             && ${rule.numMin?c} <= salesNum
-            && salesNum <= ${rule.numMax?c});
+            && salesNum <= ${rule.numMax?c}
         </#if>
+        );
     then
         BigDecimal sumAmount = BigDecimal.ZERO;
         <#if rule.commissionType == "2">

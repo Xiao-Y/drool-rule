@@ -14,10 +14,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author liuyongtao
@@ -36,7 +33,7 @@ public class RuleTest extends DroolsApplicationTests {
     public void test2() {
 
         DeveloperSettlementParam param = new DeveloperSettlementParam("2","1", "2",
-                new BigDecimal(100000000),new BigDecimal(50000));
+                new BigDecimal(100000000),new BigDecimal(50000),"2021-01-12");
         KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(333);
         kieSession.setGlobal("logger", log);
 

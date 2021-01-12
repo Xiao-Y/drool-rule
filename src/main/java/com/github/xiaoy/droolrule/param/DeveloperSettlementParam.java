@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,17 +25,19 @@ public class DeveloperSettlementParam {
      * @param houseType:      产品类型：1-住宅，2-小于150w 商铺，3-150-300w 商铺，4-300w 以上商铺
      * @param salesAmount:    销售金额（跳点条件，1-固定值）
      * @param amount:         提成金额，例如 销售金额、签约金额(个人)
+     * @param assessmentDate: 考核时间
      * @author billow
      * @Date 2021/1/10 13:33
      * @return: null
      **/
     public DeveloperSettlementParam(String jumpPoint, String commissionType, String houseType, BigDecimal salesAmount,
-                                    BigDecimal amount) {
+                                    BigDecimal amount, String assessmentDate) {
         this.jumpPoint = jumpPoint;
         this.salesAmount = salesAmount;
         this.houseType = houseType;
         this.commissionType = commissionType;
         this.amount = amount;
+        this.assessmentDate = assessmentDate;
     }
 
     /**
@@ -45,18 +48,25 @@ public class DeveloperSettlementParam {
      * @param houseType:      产品类型：1-住宅，2-小于150w 商铺，3-150-300w 商铺，4-300w 以上商铺
      * @param salesNum:       成交套数（跳点条件，2-区间值）
      * @param amount:         提成金额，例如 销售金额、签约金额(个人)
+     * @param assessmentDate: 考核时间
      * @author billow
      * @Date 2021/1/10 13:34
      * @return: null
      **/
     public DeveloperSettlementParam(String jumpPoint, String commissionType, String houseType, Integer salesNum,
-                                    BigDecimal amount) {
+                                    BigDecimal amount, String assessmentDate) {
         this.jumpPoint = jumpPoint;
         this.salesNum = salesNum;
         this.houseType = houseType;
         this.commissionType = commissionType;
         this.amount = amount;
+        this.assessmentDate = assessmentDate;
     }
+
+    /**
+     * 考核时间
+     */
+    private String assessmentDate;
 
     /**
      * 跳点条件，1-固定，2-范围

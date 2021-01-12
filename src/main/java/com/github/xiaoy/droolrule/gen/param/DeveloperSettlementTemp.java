@@ -15,11 +15,19 @@ import java.math.BigDecimal;
 public class DeveloperSettlementTemp {
 
     /**
+     * 考核开始时间
+     */
+    private String startDate;
+    /**
+     * 考核结束时间
+     */
+    private String endDate;
+    /**
      * 跳点条件，1-固定，2-范围
      */
     private String jumpPoint;
     /**
-     * 产品类型：1-住宅，2-小于150w 商铺，3-150-300w 商铺，4-300w 以上商铺
+     * 物业类型：1-住宅，2-小于150w 商铺，3-150-300w 商铺，4-300w 以上商铺
      */
     private String houseType;
     /**
