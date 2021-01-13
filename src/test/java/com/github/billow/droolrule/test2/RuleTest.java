@@ -34,7 +34,7 @@ public class RuleTest extends DroolsApplicationTests {
 
         DeveloperSettlementParam param = new DeveloperSettlementParam("2","1", "2",
                 new BigDecimal(100000000),new BigDecimal(50000),"2021-01-12");
-        KieSession kieSession = kieSessionHelper.getKieSessionByGroupId(333);
+        KieSession kieSession = kieSessionHelper.getKieSessionByGroupId("1",333L);
         kieSession.setGlobal("logger", log);
 
         kieSession.insert(param);

@@ -4,9 +4,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driverClassName: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://107.0.0.1:3306/rule-engine?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      url: jdbc:mysql://119.23.27.78:3308/rule-engine?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
       username: root
-      password: root
+      password: ali-root
       initial-size: 10
       max-active: 100
       min-idle: 10

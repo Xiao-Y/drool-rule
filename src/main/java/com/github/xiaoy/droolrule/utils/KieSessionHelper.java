@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * KieSession助手类
  *
- * @author billow
+ * @author liuyongtao
  * @Date 2021/1/10 16:38
  **/
 @Slf4j
@@ -26,14 +26,16 @@ public class KieSessionHelper {
      * @param groupId 分组ID
      * @return KieSession
      */
-    public KieSession getKieSessionByGroupId(long groupId) {
+    public KieSession getKieSessionByGroupId(String tempCode, Long groupId) {
+        log.info("fire tempCode：{},groupId：{}", tempCode, groupId);
         KieContainer kieContainer = initRuleLoader.getKieContainerByGroupId(groupId);
         if (kieContainer == null) {
-            boolean reload = initRuleLoader.reload(groupId);
+            boolean reload = initRuleLoader.reload(tempCode, groupId);
             if (!reload) {
                 log.error("没有找到对应的分组,groupId:{}", groupId);
                 throw new RuntimeException("没有找到对应的分组");
             }
+            kieContainer = initRuleLoader.getKieContainerByGroupId(groupId);
         }
 
         KieSession kieSession = kieContainer.getKieBase().newKieSession();

@@ -1,62 +1,47 @@
 package com.github.xiaoy.droolrule.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.xiaoy.droolrule.constant.DroolsRuleGenCst;
-import com.github.xiaoy.droolrule.entity.RuleInfo;
+import com.github.xiaoy.droolrule.vo.RuleInfoVo;
 
 import java.util.List;
-import java.util.Map;
 
 /**
+ * 查询参数接口
+ *
  * @author liuyongtao
- * @since 2021-1-8 16:18
+ * @since 2021-1-12 19:39
  */
-public interface RuleInfoService extends IService<RuleInfo> {
+public interface RuleInfoService<T> {
 
     /**
-     * 模板转换规则语句
+     * 查询出所有的规则
      *
-     * @param tempCode: 模板生成类型
-     * @param groupId:  分组id,不同规则可以分到一个组
-     * @author billow
-     * @Date 2021/1/8 21:30
-     * @return: long
-     **/
-    long insertRule(String tempCode, long groupId) throws Exception;
-
-    /**
-     * 获取给定分组下的规则信息列表
-     *
-     * @param groupId 分组ID
-     * @return 规则列表
+     * @return
+     * @author liuyongtao
      */
-    List<RuleInfo> getRuleInfoListByGroupId(Long groupId);
+    List<RuleInfoVo> findRuleList();
 
     /**
-     * 获取分组与规则信息列表的Map
+     * 通过 groupId 查询出一组规则
      *
-     * @return 分组规则信息列表Map，Map(groupId : List < RuleInfo >)
+     * @param groupId
+     * @return
+     * @author liuyongtao
      */
-    Map<Long, List<RuleInfo>> getRuleInfoListMap();
+    List<RuleInfoVo> findRuleListByGroupId(Long groupId);
 
     /**
-     * 触发给定分组规则
+     * 查询生成规则的参数，在对应的生成器中转换数据类型
      *
-     * @param groupId: 分组ID
-     * @param obj:     规参数对象
-     * @author billow
-     * @Date 2021/1/10 18:04
-     * @return: void
-     **/
-    void fire(long groupId, Object obj);
+     * @param bizId 业务主键
+     * @return
+     * @author liuyongtao
+     */
+    List<T> findGenerateRuleParam(Long bizId);
 
     /**
-     * 删除给定分组规则
+     * 更新规则
      *
-     * @param groupId: 分组ID
-     * @author billow
-     * @Date 2021/1/10 18:04
-     * @return: void
-     **/
-    void delRule(long groupId);
+     * @param info
+     */
+    void updateRule(RuleInfoVo info);
 }

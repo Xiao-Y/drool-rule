@@ -3,13 +3,13 @@ package com.github.xiaoy.droolrule.gen.param;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 模板参数对应 DeveloperSettlement.ftl
  *
- * @author billow
+ * @author liuyongtao
  * @Date 2021/1/9 15:26
- * @return: null
  **/
 @Data
 public class DeveloperSettlementTemp {

@@ -1,52 +1,68 @@
 package com.github.xiaoy.droolrule.api;
 
+import com.github.xiaoy.droolrule.vo.RuleInfoVo;
 import com.github.xiaoy.droolrule.init.InitRuleLoader;
-import com.github.xiaoy.droolrule.param.DeveloperSettlementParam;
-import com.github.xiaoy.droolrule.service.RuleInfoService;
+import com.github.xiaoy.droolrule.service.DroolsRuleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Date;
+import java.util.Map;
 
 /**
  * 规则配置api
  *
  * @author liuyongtao
- * @since 2021-1-8 16:03
+ * @since 2021-1-8 16：03
  */
 @Slf4j
+@RequestMapping("/api/ruleApi")
 @RestController
 public class RuleApi {
 
     @Autowired
-    private RuleInfoService ruleInfoService;
+    private DroolsRuleService droolsRuleService;
 
     @Autowired
     private InitRuleLoader initRuleLoader;
 
-    @PostMapping("/insertRule/{tempCode}")
-    public long insertRule(@PathVariable("tempCode") String tempCode,
-                           @RequestParam("groupId") long groupId) throws Exception {
-        log.info("模板生成类型：{},规则分组：{}", tempCode, groupId);
-        long id = ruleInfoService.insertRule(tempCode, groupId);
-        log.info("规则 id：{},groupId：{}", id, groupId);
-        return groupId;
+    /**
+     * 生成规则，返回规则组id
+     *
+     * @param tempCode 参见 com.evergrande.cloud.deal.drools.constant.TemplateGenEnum
+     * @param bizId    业务id,用于查询规则参数
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/genRule/{tempCode}/{bizId}")
+    public RuleInfoVo genRule(@PathVariable("tempCode") String tempCode,
+                              @PathVariable("bizId") Long bizId) throws Exception {
+        log.info("tempCode：{},bizId：{}", tempCode, bizId);
+        RuleInfoVo ruleInfoVo = droolsRuleService.genRule(tempCode, bizId);
+        log.info("规则 ruleInfo：{}", ruleInfoVo);
+        return ruleInfoVo;
     }
 
+    /**
+     * 删除规则
+     *
+     * @param groupId 分组ID
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/delRule/{groupId}")
-    public String delRule(@PathVariable("groupId") long groupId) throws Exception {
+    public String delRule(@PathVariable("groupId") Long groupId) throws Exception {
         log.info("规则分组：{}", groupId);
-        ruleInfoService.delRule(groupId);
+        droolsRuleService.delRule(groupId);
         return "success";
     }
 
     /**
      * 重新加载所有规则
+     *
+     * @return
      */
-    @GetMapping("reload")
+    @GetMapping("/reload")
     public String reload() {
         log.info("reload all");
         initRuleLoader.reloadAll();
@@ -56,41 +72,31 @@ public class RuleApi {
     /**
      * 重新加载给定分组下的规则
      *
-     * @param groupId 分组ID
+     * @param tempCode 参见 com.evergrande.cloud.deal.drools.constant.TemplateGenEnum
+     * @param groupId  分组ID
      */
-    @GetMapping("reload/{groupId}")
-    public String reload(@PathVariable("groupId") Long groupId) {
-        log.info("reload scene:" + groupId);
-        initRuleLoader.reload(groupId);
-        return "success";
+    @GetMapping("/reload/{tempCode}/{groupId}")
+    public String reload(@PathVariable("tempCode") String tempCode,
+                         @PathVariable("groupId") Long groupId) {
+        log.info("reload tempCode：{},groupId：{}", tempCode, groupId);
+        boolean reload = initRuleLoader.reload(tempCode, groupId);
+        return "success:" + reload;
     }
 
     /**
      * 触发给定分组规则
      *
-     * @param groupId 分组ID
+     * @param groupId  分组ID
+     * @param tempCode 参见 com.evergrande.cloud.deal.drools.constant.TemplateGenEnum
+     * @return
      */
-    @GetMapping("fire/{groupId}/{id}")
-    public Object fire(@PathVariable("groupId") long groupId,
-                       @PathVariable("id") long id) {
-        log.info("fire scene groupId:{},id:{}", groupId, id);
-
-        // id 查询出数据，组装成 对应的对象
-        Object p1;
-        if (id == 11) {
-            p1 = new DeveloperSettlementParam("1", "1", "2",
-                    new BigDecimal(10000000000L), new BigDecimal(50000), "2021-01-12");
-        } else if (id == 12) {
-            p1 = new DeveloperSettlementParam("1", "2", "2",
-                    new BigDecimal(10000000000L), new BigDecimal(50000), "2021-01-12");
-        } else if (id == 21) {
-            p1 = new DeveloperSettlementParam("2", "1", "2", 15,
-                    new BigDecimal(1000000), "2021-01-12");
-        } else {
-            p1 = new DeveloperSettlementParam("2", "2", "2", 15,
-                    new BigDecimal(1000000), "2021-01-12");
-        }
-        ruleInfoService.fire(groupId, p1);
-        return p1;
+    @PostMapping("/fire/{tempCode}/{groupId}")
+    public Object fire(@PathVariable("tempCode") String tempCode,
+                       @PathVariable("groupId") Long groupId,
+                       @RequestBody Map<String, Object> param) {
+        log.info("fire tempCode：{},groupId：{},param：{}", groupId, tempCode, param);
+        Object obj = droolsRuleService.fire(tempCode, groupId, param);
+        log.info("匹配后的返回：{}", obj);
+        return obj;
     }
 }

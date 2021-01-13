@@ -1,5 +1,10 @@
 package com.github.xiaoy.droolrule.exception;
 
+/**
+ * 规则异常信息
+ *
+ * @author liuyongtao
+ */
 public class DroolsRuleException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

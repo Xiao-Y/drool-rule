@@ -14,7 +14,7 @@ spring:
     name: drool-rule
   freemarker:
     cache: false
-    template-loader-path: classpath:/droolRule/templates/
+    template-loader-path: classpath:/droolsRuleTemp/
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml

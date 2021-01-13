@@ -13,6 +13,8 @@ import java.util.Map;
 
 /**
  * 规则生成器
+ *
+ * @author liuyongtao
  */
 public abstract class RuleGen<T> {
 
@@ -24,8 +26,8 @@ public abstract class RuleGen<T> {
     /**
      * 根据传递进来的参数对象生规则
      */
-    public String generateRule(Object obj) throws Exception {
-        String drlString = this.applyRuleTemplate(obj);
+    public String generateRule(List<T> listTemp) throws Exception {
+        String drlString = this.applyRuleTemplate(listTemp);
         log.info("\n************ 生成的drl start ***********\n{}\n************ 生成的drl end ***********", drlString);
         return drlString;
     }
@@ -35,8 +37,8 @@ public abstract class RuleGen<T> {
      *
      * @return
      */
-    private String applyRuleTemplate(Object obj) throws Exception {
-        List<T> data = this.prepareData(obj);
+    private String applyRuleTemplate(List<T> listTemp) throws Exception {
+        List<T> data = this.prepareData(listTemp);
         this.checkTempData(data);
         Map<String, Object> maps = new HashMap<>();
         maps.put("root", data);
@@ -49,7 +51,9 @@ public abstract class RuleGen<T> {
      *
      * @return
      */
-    protected abstract List<T> prepareData(Object obj);
+    protected List<T> prepareData(List<T> listTemp) {
+        return listTemp;
+    }
 
     /**
      * 检查模板数据

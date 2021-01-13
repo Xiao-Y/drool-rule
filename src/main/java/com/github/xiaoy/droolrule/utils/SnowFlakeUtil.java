@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 唯一Id生成器基于雪花算法
  *
- * @author billow
+ * @author liuyongtao
  * @Date 2021/1/10 16:49
  **/
 @Slf4j

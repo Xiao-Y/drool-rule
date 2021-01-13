@@ -1,7 +1,7 @@
 package com.github.xiaoy.droolrule.init;
 
-import com.github.xiaoy.droolrule.entity.RuleInfo;
-import com.github.xiaoy.droolrule.service.RuleInfoService;
+import com.github.xiaoy.droolrule.vo.RuleInfoVo;
+import com.github.xiaoy.droolrule.service.DroolsRuleService;
 import lombok.extern.slf4j.Slf4j;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * 规则加载器
  *
- * @author billow
+ * @author liuyongtao
  * @Date 2021/1/10 16:37
  **/
 @Slf4j
@@ -39,7 +39,7 @@ public class InitRuleLoader implements ApplicationRunner {
     private final ConcurrentMap<String, KieContainer> kieContainerMap = new ConcurrentHashMap<>();
 
     @Autowired
-    private RuleInfoService ruleInfoService;
+    private DroolsRuleService droolsRuleService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -54,7 +54,7 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId 分组ID
      * @return kcontainerName
      */
-    private String buildKcontainerName(long groupId) {
+    private String buildKcontainerName(Long groupId) {
         return "kcontainer_" + groupId;
     }
 
@@ -64,7 +64,7 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId 分组ID
      * @return kbaseName
      */
-    private String buildKbaseName(long groupId) {
+    private String buildKbaseName(Long groupId) {
         return "kbase_" + groupId;
     }
 
@@ -74,7 +74,7 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId 分组ID
      * @return ksessionName
      */
-    private String buildKsessionName(long groupId) {
+    private String buildKsessionName(Long groupId) {
         return "ksession_" + groupId;
     }
 
@@ -84,7 +84,7 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId 分组ID
      * @return KieContainer
      */
-    public KieContainer getKieContainerByGroupId(long groupId) {
+    public KieContainer getKieContainerByGroupId(Long groupId) {
         return kieContainerMap.get(buildKcontainerName(groupId));
     }
 
@@ -94,7 +94,7 @@ public class InitRuleLoader implements ApplicationRunner {
      * @param groupId 分组ID
      * @return KieContainer
      */
-    public KieContainer delKieContainerByGroupId(long groupId) {
+    public KieContainer delKieContainerByGroupId(Long groupId) {
         return kieContainerMap.remove(buildKcontainerName(groupId));
     }
 
@@ -102,8 +102,8 @@ public class InitRuleLoader implements ApplicationRunner {
      * 重新加载所有规则
      */
     public void reloadAll() {
-        Map<Long, List<RuleInfo>> groupId2RuleInfoListMap = ruleInfoService.getRuleInfoListMap();
-        for (Map.Entry<Long, List<RuleInfo>> entry : groupId2RuleInfoListMap.entrySet()) {
+        Map<Long, List<RuleInfoVo>> groupId2RuleInfoListMap = droolsRuleService.getRuleInfoListMap();
+        for (Map.Entry<Long, List<RuleInfoVo>> entry : groupId2RuleInfoListMap.entrySet()) {
             long groupId = entry.getKey();
             reload(groupId, entry.getValue());
         }
@@ -115,9 +115,9 @@ public class InitRuleLoader implements ApplicationRunner {
      *
      * @param groupId 分组ID
      */
-    public boolean reload(Long groupId) {
-        List<RuleInfo> ruleInfos = ruleInfoService.getRuleInfoListByGroupId(groupId);
-        boolean reload = reload(groupId, ruleInfos);
+    public boolean reload(String tempCode, Long groupId) {
+        List<RuleInfoVo> ruleInfoVos = droolsRuleService.getRuleInfoListByGroupId(tempCode, groupId);
+        boolean reload = reload(groupId, ruleInfoVos);
         log.info("reload success:{}", reload);
         return reload;
     }
@@ -126,10 +126,10 @@ public class InitRuleLoader implements ApplicationRunner {
      * 重新加载给定分组给定规则列表，对应一个kmodule
      *
      * @param groupId   分组ID
-     * @param ruleInfos 规则列表
+     * @param ruleInfoVos 规则列表
      */
-    private boolean reload(long groupId, List<RuleInfo> ruleInfos) {
-        if (CollectionUtils.isEmpty(ruleInfos)) {
+    private boolean reload(Long groupId, List<RuleInfoVo> ruleInfoVos) {
+        if (CollectionUtils.isEmpty(ruleInfoVos)) {
             log.info("规则组为空，不添加");
             return false;
         }
@@ -141,11 +141,11 @@ public class InitRuleLoader implements ApplicationRunner {
         kieBaseModel.newKieSessionModel(buildKsessionName(groupId));
 
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
-        for (RuleInfo ruleInfo : ruleInfos) {
-            log.info("正在加载规则 id:{},groupId:{}", ruleInfo.getId(), ruleInfo.getGroupId());
+        for (RuleInfoVo ruleInfoVo : ruleInfoVos) {
+            log.info("正在加载规则 id:{},groupId:{}", ruleInfoVo.getId(), ruleInfoVo.getGroupId());
             String fullPath = MessageFormat.format("src/main/resources/rules/scene_{0}/rule_{1}.drl",
-                    String.valueOf(groupId), String.valueOf(ruleInfo.getId()));
-            kieFileSystem.write(fullPath, ruleInfo.getRuleContent());
+                    String.valueOf(groupId), String.valueOf(ruleInfoVo.getId()));
+            kieFileSystem.write(fullPath, ruleInfoVo.getRuleContent());
         }
         kieFileSystem.writeKModuleXML(kieModuleModel.toXML());
 

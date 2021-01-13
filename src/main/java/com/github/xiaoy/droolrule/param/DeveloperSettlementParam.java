@@ -4,18 +4,20 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
+ * 开发商结算规则。
  * 使用规则时，需要填充的参数（！！！ 此类中的属性只许添加，不许修改和删除）
  *
- * @author billow
+ * @author liuyongtao
  * @Date 2021/1/9 15:26
- * @return: null
  **/
 @Data
 public class DeveloperSettlementParam {
+
+    public DeveloperSettlementParam() {
+    }
 
     /**
      * 固定跳点
@@ -26,7 +28,7 @@ public class DeveloperSettlementParam {
      * @param salesAmount:    销售金额（跳点条件，1-固定值）
      * @param amount:         提成金额，例如 销售金额、签约金额(个人)
      * @param assessmentDate: 考核时间
-     * @author billow
+     * @author liuyongtao
      * @Date 2021/1/10 13:33
      * @return: null
      **/
@@ -49,7 +51,7 @@ public class DeveloperSettlementParam {
      * @param salesNum:       成交套数（跳点条件，2-区间值）
      * @param amount:         提成金额，例如 销售金额、签约金额(个人)
      * @param assessmentDate: 考核时间
-     * @author billow
+     * @author liuyongtao
      * @Date 2021/1/10 13:34
      * @return: null
      **/

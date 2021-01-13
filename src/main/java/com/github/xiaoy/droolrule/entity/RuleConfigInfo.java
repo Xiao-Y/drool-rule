@@ -7,8 +7,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("re_rule_info")
-public class RuleInfo {
+@TableName("re_rule_config")
+public class RuleConfigInfo {
 
     @TableId("id")
     private Long id;
@@ -25,6 +25,7 @@ public class RuleInfo {
      * 规则内容，既drl文件内容
      */
     private String ruleContent;
+
     private Boolean isDelete;
     private Boolean validInd;
     private Date createTime;
